@@ -1,0 +1,2 @@
+class PyRepError(Exception):
+    pass
