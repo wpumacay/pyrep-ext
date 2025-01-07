@@ -155,6 +155,7 @@ class const:
 
     sim_gui_all: int = 0x0ffff
     sim_gui_headless: int = 0x10000
+    sim_gui_none: int = 0x00000
 
     sim_stringparam_app_arg1: int = 2
     sim_stringparam_additional_addonscript1: int = 11

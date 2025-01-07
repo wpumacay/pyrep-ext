@@ -75,7 +75,7 @@ class PyRep(object):
         if len(scene_file) > 0 and not os.path.isfile(abs_scene_file):
             raise PyRepError("Scene file does not exist: %s" % scene_file)
         self._sim_backend = SimBackend()
-        self._ui_thread = self._sim_backend.create_ui_thread(headless)
+        self._ui_thread = self._sim_backend.create_ui_thread(headless, responsive_ui)
         self._ui_thread.start()
         self._sim_api = self._sim_backend.simInitialize(
             self._coppeliasim_root, verbosity.value

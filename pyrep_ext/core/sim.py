@@ -58,8 +58,8 @@ class SimBackend:
         )
         return self._sim
 
-    def create_ui_thread(self, headless: bool) -> threading.Thread:
-        options = const.sim_gui_headless if headless else const.sim_gui_all
+    def create_ui_thread(self, headless: bool, responsive_ui: bool) -> threading.Thread:
+        options = const.sim_gui_headless if headless else (const.sim_gui_all if responsive_ui else const.sim_gui_none)
         ui_thread = threading.Thread(target=cpllib.simRunGui, args=(options,))
         ui_thread.daemon = True
         return ui_thread
