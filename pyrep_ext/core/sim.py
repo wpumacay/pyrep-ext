@@ -1,9 +1,9 @@
 import threading
 from ctypes import c_char_p
 
-from .lib import cpllib, const
 from .bridge import load as bridge_load
 from .bridge import require as bridge_require
+from .lib import const, cpllib
 
 
 class SimBackend:
@@ -41,7 +41,8 @@ class SimBackend:
             const.sim_stringparam_verbosity, c_char_p(verbosity.encode("utf-8"))
         )
         cpllib.simSetStringParam(
-            const.sim_stringparam_statusbarverbosity, c_char_p(verbosity.encode("utf-8"))
+            const.sim_stringparam_statusbarverbosity,
+            c_char_p(verbosity.encode("utf-8")),
         )
         cpllib.simInitialize(c_char_p(appDir.encode("utf-8")), 0)
 
@@ -58,8 +59,14 @@ class SimBackend:
         )
         return self._sim
 
-    def create_ui_thread(self, headless: bool, responsive_ui: bool) -> threading.Thread:
-        options = const.sim_gui_headless if headless else (const.sim_gui_all if responsive_ui else const.sim_gui_none)
+    def create_ui_thread(
+        self, headless: bool, responsive_ui: bool
+    ) -> threading.Thread:
+        options = (
+            const.sim_gui_headless
+            if headless
+            else (const.sim_gui_all if responsive_ui else const.sim_gui_none)
+        )
         ui_thread = threading.Thread(target=cpllib.simRunGui, args=(options,))
         ui_thread.daemon = True
         return ui_thread
