@@ -1,11 +1,18 @@
 import os
 import platform
+from ctypes import (
+    CFUNCTYPE,
+    POINTER,
+    c_bool,
+    c_char_p,
+    c_double,
+    c_int,
+    c_longlong,
+    c_ubyte,
+    c_void_p,
+    cdll,
+)
 from dataclasses import dataclass
-
-from ctypes import cdll
-from ctypes import c_int, c_double, c_bool, c_longlong, c_ubyte
-from ctypes import c_void_p, c_char_p, POINTER
-from ctypes import CFUNCTYPE
 
 from .errors import PyRepError
 
@@ -19,20 +26,22 @@ c_callbackfn_p = CFUNCTYPE(c_int, c_int)
 
 
 if "COPPELIASIM_ROOT" not in os.environ:
-    raise PyRepError("COPPELIASIM_ROOT not defined. See installation instructions.")
+    raise PyRepError(
+        "COPPELIASIM_ROOT not defined. See installation instructions."
+    )
 COPPELIASIM_ROOT = os.environ["COPPELIASIM_ROOT"]
 COPPELIASIM_LIBPATH = ""
 
 plat = platform.system()
-if plat == 'Windows':
+if plat == "Windows":
     raise NotImplementedError("PyRepExt >> not implemented for Windows yet")
-elif plat == 'Linux':
+elif plat == "Linux":
     COPPELIASIM_LIBPATH = os.path.join(COPPELIASIM_ROOT, "libcoppeliaSim.so")
-elif plat == 'Darwin':
+elif plat == "Darwin":
     raise NotImplementedError("PyRepExt >> not implemented for MacOS yet")
 
 
-os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = COPPELIASIM_ROOT
+os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = COPPELIASIM_ROOT
 
 cpllib = cdll.LoadLibrary(COPPELIASIM_LIBPATH)
 cpllib.simRunGui.argtypes = [c_int]
@@ -122,6 +131,7 @@ cpllib.simDebugStack.restype = c_int
 cpllib.simGetStringParam.argtypes = [c_int]
 cpllib.simGetStringParam.restype = c_void_p
 
+
 @dataclass(frozen=True)
 class const:
     sim_stackitem_null: int = 0
@@ -153,7 +163,7 @@ class const:
     sim_scripttype_customizationscript: int = 6
     sim_scripttype_sandboxscript: int = 8
 
-    sim_gui_all: int = 0x0ffff
+    sim_gui_all: int = 0x0FFFF
     sim_gui_headless: int = 0x10000
     sim_gui_none: int = 0x00000
 
