@@ -3,16 +3,14 @@ import sys
 import threading
 import time
 import warnings
-from typing import Tuple, List
 
 import numpy as np
 
+from pyrep_ext.const import Verbosity
 from pyrep_ext.core import utils
+from pyrep_ext.core.errors import PyRepError
 from pyrep_ext.core.sim import SimBackend
 from pyrep_ext.core.sim_const import sim_floatparam_simulation_time_step
-
-from pyrep_ext.const import Verbosity
-from pyrep_ext.errors import PyRepError
 
 
 class PyRep(object):
@@ -75,7 +73,9 @@ class PyRep(object):
         if len(scene_file) > 0 and not os.path.isfile(abs_scene_file):
             raise PyRepError("Scene file does not exist: %s" % scene_file)
         self._sim_backend = SimBackend()
-        self._ui_thread = self._sim_backend.create_ui_thread(headless, responsive_ui)
+        self._ui_thread = self._sim_backend.create_ui_thread(
+            headless, responsive_ui
+        )
         self._ui_thread.start()
         self._sim_api = self._sim_backend.simInitialize(
             self._coppeliasim_root, verbosity.value
@@ -105,7 +105,9 @@ class PyRep(object):
     def shutdown(self) -> None:
         """Shuts down the CoppeliaSim simulation."""
         if self._ui_thread is None:
-            raise PyRepError("CoppeliaSim has not been launched. Call launch first.")
+            raise PyRepError(
+                "CoppeliaSim has not been launched. Call launch first."
+            )
         if self._ui_thread is not None:
             # self._shutting_down = True
             self.stop()
@@ -116,7 +118,8 @@ class PyRep(object):
             # self._ui_thread.join()
             # if self._responsive_ui_thread is not None:
             #     self._responsive_ui_thread.join()
-            # # CoppeliaSim crashes if new instance opened too quickly after shutdown.
+            # # CoppeliaSim crashes if new instance opened too quickly
+            # # after shutdown.
             # # TODO: A small sleep stops this for now.
             # time.sleep(0.1)
         self._ui_thread = None
@@ -125,7 +128,9 @@ class PyRep(object):
     def start(self) -> None:
         """Starts the physics simulation if it is not already running."""
         if self._ui_thread is None:
-            raise PyRepError("CoppeliaSim has not been launched. Call launch first.")
+            raise PyRepError(
+                "CoppeliaSim has not been launched. Call launch first."
+            )
         if not self.running:
             self._sim_backend.simStartSimulation()
             self.running = True
@@ -133,13 +138,12 @@ class PyRep(object):
     def stop(self) -> None:
         """Stops the physics simulation if it is running."""
         if self._ui_thread is None:
-            raise PyRepError("CoppeliaSim has not been launched. Call launch first.")
+            raise PyRepError(
+                "CoppeliaSim has not been launched. Call launch first."
+            )
         if self.running:
             self._sim_backend.simStopSimulation()
             self.running = False
-
-            # # Need this so the UI updates
-            # [self.step() for _ in range(5)]  # type: ignore
 
     def step(self) -> None:
         """Execute the next simulation step.
@@ -159,3 +163,20 @@ class PyRep(object):
         """
         with self._step_lock:
             self._sim_backend.simLoop()
+
+    def set_simulation_timestep(self, dt: float) -> None:
+        if self._sim_api is not None:
+            self._sim_api.setFloatParameter(
+                sim_floatparam_simulation_time_step, dt
+            )
+            if not np.allclose(self.get_simulation_timestep(), dt):
+                warnings.warn(
+                    "pyrep::set_simulation_timestep >>> Could not change "
+                    f"simulation timestep to value {dt}. You may need to "
+                    'change it to "custom dt" using simulation settings dialog.'
+                )
+
+    def get_simulation_timestep(self) -> float:
+        if self._sim_api is not None:
+            return self._sim_api.getSimulationTimeStep()
+        return 0
