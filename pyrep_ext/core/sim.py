@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import threading
 from ctypes import c_char_p
+from typing import Any, Optional
 
 from .bridge import load as bridge_load
 from .bridge import require as bridge_require
@@ -7,36 +10,34 @@ from .lib import const, cpllib
 
 
 class SimBackend:
-    _instance = None
+    _instance: Optional[SimBackend] = None
 
     def __new__(cls):
-        # Singleton pattern
         if cls._instance is None:
             cls._instance = super(SimBackend, cls).__new__(cls)
-            # Put any initialization here.
         return cls._instance
 
     @property
-    def sim_api(self):
+    def sim_api(self) -> Any:
         return self._sim
 
     @property
-    def sim_ik_api(self):
+    def sim_ik_api(self) -> Any:
         return self._sim_ik
 
     @property
-    def sim_ompl_api(self):
+    def sim_ompl_api(self) -> Any:
         return self._sim_ompl
 
     @property
-    def sim_vision_api(self):
+    def sim_vision_api(self) -> Any:
         return self._sim_vision
 
     @property
-    def lib(self):
+    def lib(self) -> Any:
         return cpllib
 
-    def simInitialize(self, appDir: str, verbosity: str):
+    def simInitialize(self, appDir: str, verbosity: str) -> Any:
         cpllib.simSetStringParam(
             const.sim_stringparam_verbosity, c_char_p(verbosity.encode("utf-8"))
         )
