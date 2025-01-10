@@ -20,6 +20,7 @@ def main() -> int:
 
     print(f"sphere handle: {sphere.get_handle()}")
     print(f"sphere position: {sphere.get_position()}")
+    print(f"sphere orientation: {sphere.get_orientation()}")
 
     _, _, z = sphere.get_position()
 

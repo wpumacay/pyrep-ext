@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 
 import numpy as np
 
 from pyrep_ext.const import ObjectType
+from pyrep_ext.core import sim_const
 from pyrep_ext.core.errors import WrongObjectTypeError
 from pyrep_ext.core.sim import SimBackend
 
@@ -85,7 +86,6 @@ class Object:
         self,
         position: Union[list, np.ndarray],
         relative_to: Optional[Object] = None,
-        reset_dynamics: bool = True,
     ) -> None:
         """
         Sets the position of this object with respect to the given object. If no
@@ -97,11 +97,91 @@ class Object:
                 The position of the object
             relative_to: Optional[Object]
                 An object to be used as reference to set the position
-            reset_dynamics: bool
-                Whether or not to reset the dynamics after moving the object
         """
         rel_to_handle = -1 if relative_to is None else relative_to.get_handle()
-
         self._sim_api.setObjectPosition(
             self._handle, list(position), rel_to_handle
         )
+
+    def get_orientation(
+        self, relative_to: Optional[Object] = None
+    ) -> np.ndarray:
+        """
+        Returns the orientation of this object as a set of Euler angles.
+
+        Note that if no object is given as reference, then the orientation is
+        measured with respect to the world frame.
+
+        Parameters
+        ----------
+            relative_to: Optional[Object]
+                An object to be used as reference to get the orientation
+
+        Returns
+        -------
+            np.ndarray
+                The set of Euler angles measured respect to the given frame
+        """
+        rel_to_handle = -1 if relative_to is None else relative_to.get_handle()
+        orientation = self._sim_api.getObjectOrientation(
+            self._handle, rel_to_handle
+        )
+        return np.array(orientation, np.float64)
+
+    def set_orientation(
+        self,
+        orientation: Union[list, np.ndarray],
+        relative_to: Optional[Object] = None,
+    ) -> None:
+        """
+        Sets the orientation of this object with respect to a given reference
+
+        Note that if no reference object is given, then the orientation is
+        measured with respect to the world frame.
+
+        Parameters
+        ----------
+            orientation: Union[list, np.ndarray]
+                The orientation to be set for this object
+            relative_to: Optional[Object]
+                An object used as reference to set the orientation of the object
+        """
+        rel_to_handle = -1 if relative_to is None else relative_to.get_handle()
+        self._sim_api.setObjectOrientation(
+            self._handle, list[orientation], rel_to_handle
+        )
+
+    def reset_dynamic_object(self) -> None:
+        """Dynamically resets an object that is dynamically simulated
+
+        This means that the object representation in the dynamics engine is
+        removed, and added again. This can be useful when the set-up of a
+        dynamically simulated chain needs to be modified during simulation
+        (e.g. joint or shape attachement position/orientation changed).
+        It should be noted that calling this on a dynamically simulated object
+        might slightly change its position/orientation relative to its parent
+        (since the object will be disconnected from the dynamics world in its
+        current position/orientation), so the user is in charge of rectifying
+        for that.
+        """
+        self._sim_api.resetDynamicObject(self._handle)
+
+    def get_bounding_box(self) -> List[float]:
+        """Gets the bounding box (relative to the object reference frame)
+
+        Returns
+        -------
+            List[float]
+                A list containing the AABB positions
+        """
+        params = [
+            sim_const.sim_objfloatparam_objbbox_min_x,
+            sim_const.sim_objfloatparam_objbbox_max_x,
+            sim_const.sim_objfloatparam_objbbox_min_y,
+            sim_const.sim_objfloatparam_objbbox_max_y,
+            sim_const.sim_objfloatparam_objbbox_min_z,
+            sim_const.sim_objfloatparam_objbbox_max_z,
+        ]
+        return [
+            self._sim_api.getObjectFloatParam(self._handle, p) for p in params
+        ]
