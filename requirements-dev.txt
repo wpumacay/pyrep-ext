@@ -1,0 +1,6 @@
+black
+flake8
+isort
+lark>=1.2.2
+numpy>=2.2.1
+pre-commit
