@@ -151,6 +151,53 @@ class Object:
             self._handle, list[orientation], rel_to_handle
         )
 
+    def get_quaternion(
+        self, relative_to: Optional[Object] = None
+    ) -> np.ndarray:
+        """Returns the orientation of this object as a quaternion.
+
+        Note that if no object is given as reference, then the orientation is
+        measured with respect to the world frame.
+
+        Parameters
+        ----------
+            relative_to: Optional[Object]
+                An object to use as reference frame
+
+        Returns
+        -------
+            np.ndarray
+                The orientation of the object represented as a 'xyzw' quaternion
+        """
+        rel_to_handle = -1 if relative_to is None else relative_to.get_handle()
+        quaternion = self._sim_api.getObjectQuaternion(
+            self._handle, rel_to_handle
+        )
+        return np.array(quaternion, dtype=np.float64)
+
+    def set_quaternion(
+        self,
+        quaternion: Union[list, np.ndarray],
+        relative_to: Optional[Object] = None,
+    ) -> None:
+        """Sets the orientation of this object using a quaternion representation
+
+        Note that if no object is given as reference, the object orientation is
+        set with respect to the world frame. Otherwise, the orientation is set
+        with respect to the given object as reference frame.
+
+        Parameters
+        ----------
+            quaternion: Union[list, np.ndarray]
+                The orientation to set given as a quaternion
+            relative_to: Optional[Object]
+                An object used as reference to set the orientation of the object
+        """
+        rel_to_handle = -1 if relative_to is None else relative_to.get_handle()
+        self._sim_api.setObjectQuaternion(
+            self._handle, list(quaternion), rel_to_handle
+        )
+
     def reset_dynamic_object(self) -> None:
         """Dynamically resets an object that is dynamically simulated
 
