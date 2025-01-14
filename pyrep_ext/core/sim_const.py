@@ -421,6 +421,7 @@ sim_api_errormessage_ignore = 0
 sim_api_errormessage_report = 1
 sim_api_errormessage_output = 2
 
+sim_handle_world = -1
 sim_handle_all = -2
 sim_handle_all_except_explicit = -3
 sim_handle_self = -4
@@ -1699,7 +1700,8 @@ simros_strmcmdintstring_subscriber_start = 18432
 simros_strmcmd_send_data_to_script_function = 18433
 simros_strmcmdreserved_start = 20480
 
-# Followings are copied from official sim_const.py (so possibly deprecated in C++ API)
+# Followings are copied from official sim_const.py (so possibly ...
+# ... deprecated in C++ API)
 sim_appobj_constraintsolver_type = 114
 sim_boolparam_full_model_copy_from_api = 24
 sim_boolparam_joint_motion_handling_enabled = 7

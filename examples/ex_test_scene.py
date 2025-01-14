@@ -1,7 +1,4 @@
-import time
 from pathlib import Path
-
-import numpy as np
 
 from pyrep_ext.objects.shape import Shape
 from pyrep_ext.pyrep import PyRep
@@ -22,12 +19,12 @@ def main() -> int:
     print(f"sphere position: {sphere.get_position()}")
     print(f"sphere orientation: {sphere.get_orientation()}")
     print(f"sphere quaternion: {sphere.get_quaternion()}")
-
-    _, _, z = sphere.get_position()
+    print(f"sphere pose: {sphere.get_pose()}")
+    print(f"sphere matrix: {sphere.get_matrix()}")
 
     for _ in range(1000):
-        x, y = 0.5 * np.cos(time.time()), 0.5 * np.sin(time.time())
-        sphere.set_position([x, y, z])
+        # linear_vel, angular_vel = sphere.get_velocity()
+        # print(f"linear-vel: {linear_vel}, angular-vel: {angular_vel}")
         pr.step()
 
     pr.stop()

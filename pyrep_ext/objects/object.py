@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
 
@@ -197,6 +197,105 @@ class Object:
         self._sim_api.setObjectQuaternion(
             self._handle, list(quaternion), rel_to_handle
         )
+
+    def get_pose(self, relative_to: Optional[Object] = None) -> np.ndarray:
+        """Get the pose of this object as an array of 3d pos and 4d quaternion
+
+        Note that the pose is relative to the given object reference. If no
+        object reference is given, then the pose is measured with respect to the
+        world frame
+
+        Parameters
+        ----------
+            relative_to: Optional[Object]
+                An object used as reference to get the pose of the object
+
+        Returns
+        -------
+            np.ndarray
+                The position and orientation of the object into a single array
+        """
+        position = self.get_position(relative_to=relative_to)
+        quaternion = self.get_quaternion(relative_to=relative_to)
+        return np.r_[position, quaternion]
+
+    def set_pose(
+        self,
+        pose: Union[list, np.ndarray],
+        relative_to: Optional[Object] = None,
+    ) -> None:
+        """Sets the position and orientation (quaternion) of an object
+
+        Note that an object can be provided as reference frame. If no object is
+        given as reference, then the given pose is measured with respect to the
+        world frame.
+
+        Parameters
+        ----------
+            pose: Union[list, np.ndarray]
+                The pose of the object to be set (position and quaternion)
+            relative_to: Optional[Object]
+                An optional object to be used as reference
+        """
+        assert len(pose) == 7
+        self.set_position(pose[:3], relative_to=relative_to)
+        self.set_quaternion(pose[3:], relative_to=relative_to)
+
+    def get_matrix(self, relative_to: Optional[Object] = None) -> np.ndarray:
+        """Returns the pose of the object given as a 4x4 transformation matrix
+
+        Parameters
+        ----------
+            relative_to: Optional[Object]
+                An optional object to be used as reference frame
+
+        Returns
+        -------
+            np.ndarray
+                The 4x4 matrix transform of this object
+        """
+        rel_to_handle = (
+            sim_const.sim_handle_world
+            if relative_to is None
+            else relative_to.get_handle()
+        )
+        matrix = self._sim_api.getObjectMatrix(self._handle, rel_to_handle)
+        matrix_np = np.array(matrix).reshape((3, 4))
+        return np.concatenate([matrix_np, [np.array([0, 0, 0, 1])]])
+
+    def set_matrix(
+        self, matrix: np.ndarray, relative_to: Optional[Object] = None
+    ) -> None:
+        """Sets the pose of the object given its 4x4 transformation matrix
+
+        Parameters
+        ----------
+            matrix: np.ndarray
+                The 4x4 transformation matrix to be updated for this object
+            relative_to: Optional[Object]
+                An optional object to be used as reference frame
+        """
+        rel_to_handle = (
+            sim_const.sim_handle_world
+            if relative_to is None
+            else relative_to.get_handle()
+        )
+        self._sim_api.setObjectMatrix(
+            self._handle, matrix[:3, :4].reshape((12,)).tolist(), rel_to_handle
+        )
+
+    def get_velocity(self) -> Tuple[np.ndarray, np.ndarray]:
+        """Returns both the linear and angular velocity of this object
+
+        Returns
+        -------
+            Tuple[np.ndarray, np.ndarray]
+                A tuple containing both linear and angular velocity of this body
+        """
+        linear_vel, angular_vel = self._sim_api.getObjectVelocity(self._handle)
+        linear_vel = np.array(linear_vel, dtype=np.float64)
+        angular_vel = np.array(angular_vel, dtype=np.float64)
+        return linear_vel, angular_vel
 
     def reset_dynamic_object(self) -> None:
         """Dynamically resets an object that is dynamically simulated
