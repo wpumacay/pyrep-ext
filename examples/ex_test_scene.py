@@ -21,6 +21,7 @@ def main() -> int:
     print(f"sphere quaternion: {sphere.get_quaternion()}")
     print(f"sphere pose: {sphere.get_pose()}")
     print(f"sphere matrix: {sphere.get_matrix()}")
+    print(f"sphere AABB: {sphere.get_bounding_box()}")
 
     for _ in range(1000):
         # linear_vel, angular_vel = sphere.get_velocity()

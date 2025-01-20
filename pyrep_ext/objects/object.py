@@ -266,7 +266,7 @@ class Object:
     def set_matrix(
         self, matrix: np.ndarray, relative_to: Optional[Object] = None
     ) -> None:
-        """Sets the pose of the object given its 4x4 transformation matrix
+        """Sets the pose of the object given a 4x4 transformation matrix
 
         Parameters
         ----------
