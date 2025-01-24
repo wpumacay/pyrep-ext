@@ -3,6 +3,8 @@ import sys
 import threading
 import time
 import warnings
+from pathlib import Path
+from typing import Union
 
 import numpy as np
 
@@ -10,7 +12,11 @@ from pyrep_ext.const import Verbosity
 from pyrep_ext.core import utils
 from pyrep_ext.core.errors import PyRepError
 from pyrep_ext.core.sim import SimBackend
-from pyrep_ext.core.sim_const import sim_floatparam_simulation_time_step
+from pyrep_ext.core.sim_const import (
+    sim_floatparam_simulation_time_step,
+    sim_boolparam_realtime_simulation,
+    sim_handle_app,
+)
 
 
 class PyRep(object):
@@ -47,7 +53,7 @@ class PyRep(object):
 
     def launch(
         self,
-        scene_file: str = "",
+        scene_file: Union[str, Path] = "",
         headless: bool = False,
         responsive_ui: bool = False,
         blocking: bool = False,
@@ -69,8 +75,16 @@ class PyRep(object):
         :param verbosity: The verbosity level for CoppeliaSim.
             Usually Verbosity.NONE or Verbosity.LOAD_INFOS.
         """
-        abs_scene_file = os.path.abspath(scene_file)
-        if len(scene_file) > 0 and not os.path.isfile(abs_scene_file):
+        abs_scene_file: str = ""
+        scene_file_valid: bool = False
+        if isinstance(scene_file, str):
+            abs_scene_file = os.path.abspath(scene_file)
+            scene_file_valid = len(scene_file) > 0
+        elif isinstance(scene_file, Path):
+            abs_scene_file = str(scene_file.resolve())
+            scene_file_valid = scene_file.exists()
+
+        if scene_file_valid and not os.path.isfile(abs_scene_file):
             raise PyRepError("Scene file does not exist: %s" % scene_file)
         self._sim_backend = SimBackend()
         self._ui_thread = self._sim_backend.create_ui_thread(
@@ -80,7 +94,7 @@ class PyRep(object):
         self._sim_api = self._sim_backend.simInitialize(
             self._coppeliasim_root, verbosity.value
         )
-        if len(scene_file) > 0:
+        if scene_file_valid:
             self._sim_api.loadScene(abs_scene_file)
 
         if blocking:
@@ -180,3 +194,9 @@ class PyRep(object):
         if self._sim_api is not None:
             return self._sim_api.getSimulationTimeStep()
         return 0
+
+    def set_realtime_sim(self, realtime: bool = True) -> None:
+        if self._sim_api is not None:
+            self._sim_api.setBoolProperty(
+                sim_handle_app, sim_boolparam_realtime_simulation, realtime
+            )
