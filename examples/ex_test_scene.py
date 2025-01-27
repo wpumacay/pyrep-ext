@@ -9,6 +9,7 @@ def main() -> int:
 
     pr = PyRep()
     pr.launch(scene_filepath, responsive_ui=False, headless=False)
+    # pr.set_realtime_sim()
     pr.set_simulation_timestep(0.001)
     pr.start()
 
