@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import abc
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
@@ -10,7 +11,7 @@ from pyrep_ext.core.errors import WrongObjectTypeError
 from pyrep_ext.core.sim import SimBackend
 
 
-class Object:
+class Object(abc.ABC):
     """Base interface class for CoppeliaSim scene objects"""
 
     def __init__(
@@ -56,11 +57,42 @@ class Object:
             raise NotImplementedError
         return self.get_handle() == other.get_handle()
 
+    @abc.abstractmethod
     def _get_requested_type(self) -> ObjectType:
-        raise NotImplementedError("Must be overriden.")
+        """
+        Abstract method associated with the object type for each subclass. Must
+        implement on each subclass of this interface, and return the enum type
+        of object that such subclass returns
+        """
+        pass
 
     def get_handle(self) -> int:
+        """
+        Returns the handle of this object. The handle consists in an identifier
+        that is unique for each object, and that uniquely represents an object
+        in the simulation. Note that this is the initial handle that is assigned
+        to the object, and could be invalid. Use `is_valid` to determine the
+        validity of this handle
+
+        Returns
+        -------
+            int
+                The unique handle of this object
+        """
         return self._handle
+
+    def still_exists(self) -> bool:
+        """
+        Returns the validity of the current handle for this object. This has the
+        effect of checking whether or not this object is still in the scene and
+        ready to be simulated.
+
+        Returns
+        -------
+            bool
+                Whether or not this object's handle is still valid
+        """
+        return self._sim_api.isHandle(self._handle)
 
     def get_position(self, relative_to: Optional[Object] = None) -> np.ndarray:
         """
