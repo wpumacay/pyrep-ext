@@ -14,8 +14,7 @@ from pyrep_ext.core.errors import PyRepError
 from pyrep_ext.core.sim import SimBackend
 from pyrep_ext.core.sim_const import (
     sim_floatparam_simulation_time_step,
-    sim_boolparam_realtime_simulation,
-    sim_handle_app,
+    sim_handle_scene,
 )
 
 
@@ -198,5 +197,5 @@ class PyRep(object):
     def set_realtime_sim(self, realtime: bool = True) -> None:
         if self._sim_api is not None:
             self._sim_api.setBoolProperty(
-                sim_handle_app, sim_boolparam_realtime_simulation, realtime
+                sim_handle_scene, "realtimeSimulation", realtime
             )
