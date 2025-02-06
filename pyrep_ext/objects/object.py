@@ -51,6 +51,7 @@ class Object(abc.ABC):
                 f"You requested an object of type {assert_type.name}, but the "
                 f"actual type was {actual_type.name}"
             )
+        self._name: str = self.get_name()
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Object):
@@ -363,3 +364,25 @@ class Object(abc.ABC):
         return [
             self._sim_api.getObjectFloatParam(self._handle, p) for p in params
         ]
+
+    def get_name(self) -> str:
+        """
+        Gets the name alias of this object in the scene
+
+        Returns
+        -------
+            str
+                The name alias of this object in the scene
+        """
+        return self._sim_api.getObjectAlias(self._handle)
+
+    def set_name(self, name: str) -> None:
+        """
+        Sets the name of this object in the scene
+
+        Parameters
+        ----------
+            name: str
+                The name to be set for this object in the scene
+        """
+        self._sim_api.setObjectAlias(self._handle, name)
