@@ -714,15 +714,16 @@ sim_gui_headless = 65536
 sim_autostart = 131072
 sim_autoquit = 262144
 
-sim_jointmode_passive = 0
 sim_jointmode_kinematic = 0
-sim_jointmode_motion_deprecated = 1
-sim_jointmode_ik = 2
-sim_jointmode_reserved_previously_ikdependent = 3
 sim_jointmode_dependent = 4
-sim_jointmode_force = 5
 sim_jointmode_dynamic = 5
 
+sim_jointdynctrl_free = 0
+sim_jointdynctrl_force = 1
+sim_jointdynctrl_velocity = 4
+sim_jointdynctrl_position = 8
+sim_jointdynctrl_spring = 12
+sim_jointdynctrl_callback = 16
 
 sim_verbosity_useglobal = -1
 sim_verbosity_none = 100
@@ -1710,8 +1711,6 @@ sim_boolparam_threaded_rendering_enabled = 32
 sim_ik_avoidance_constraint = 64
 sim_intparam_event_flags_read = 17
 sim_intparam_event_flags_read_clear = 18
-sim_jointmode_ikdependent = 3
-sim_jointmode_motion = 1
 sim_modelproperty_not_cuttable = 16
 sim_mplanintparam_clear_nodes = 25002
 sim_mplanintparam_nodes_computed = 25000

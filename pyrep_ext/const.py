@@ -34,11 +34,18 @@ class JointType(Enum):
 
 
 class JointMode(Enum):
-    PASSIVE = sim.sim_jointmode_passive
-    IK = sim.sim_jointmode_ik
-    IK_DEPENDENT = sim.sim_jointmode_ikdependent
+    KINEMATIC = sim.sim_jointmode_kinematic
     DEPENDENT = sim.sim_jointmode_dependent
-    FORCE = sim.sim_jointmode_force
+    DYNAMIC = sim.sim_jointmode_dynamic
+
+
+class JointControlMode(Enum):
+    FREE = sim.sim_jointdynctrl_free
+    FORCE = sim.sim_jointdynctrl_force
+    VELOCITY = sim.sim_jointdynctrl_velocity
+    POSITION = sim.sim_jointdynctrl_position
+    SPRING = sim.sim_jointdynctrl_spring
+    CALLBACK = sim.sim_jointdynctrl_callback
 
 
 class ConfigurationPathAlgorithms(Enum):
