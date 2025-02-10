@@ -2,6 +2,8 @@ from enum import Enum
 
 from .core import sim_const as sim
 
+BASE_SCENE = "pyrep_base.ttt"
+
 
 class PrimitiveShape(Enum):
     CUBOID = 0

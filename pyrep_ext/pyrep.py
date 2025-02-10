@@ -199,3 +199,7 @@ class PyRep(object):
             self._sim_api.setBoolProperty(
                 sim_handle_scene, "realtimeSimulation", realtime
             )
+
+    def import_model(self, filepath: str) -> None:
+        if self._sim_api is not None:
+            _ = self._sim_api.loadModel(filepath)

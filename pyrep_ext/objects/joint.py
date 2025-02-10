@@ -144,9 +144,29 @@ class Joint(Object):
         self._sim_api.setJointTargetPosition(self._handle, position)
 
     def get_joint_target_force(self) -> float:
+        """
+        Returns the maximum force|torque that can be applied at this joint
+
+        Returns
+        -------
+            float
+                The maximum force|torque that can be applied at this joint
+        """
         return self._sim_api.getJointTargetForce(self._handle)
 
     def set_joint_target_force(self, forceOrTorque: float) -> None:
+        """
+        Sets the target force at this joint. This quantity's meaning depends on
+        the control mode of this joint. If using FORCE mode, then this value
+        represents the actual force|torque that is applied at this joint. If
+        using POSITION mode, then this represents the maximum force|torque that
+        can be applied at this joint
+
+        Parameters
+        ----------
+            forceOrTorque: float
+                The force|torque value for the target force at this joint
+        """
         self._sim_api.setJointTargetForce(self._handle, forceOrTorque)
 
     def __repr__(self) -> str:
