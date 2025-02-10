@@ -10,7 +10,7 @@ def main() -> int:
 
     obs = env.reset()
     for _ in range(3000):
-        obs, reward, terminate, _, _ = env.step()
+        obs, reward, terminate, _, _ = env.step(env.action_space.sample())
 
     env.close()
     return 0
