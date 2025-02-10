@@ -1,5 +1,8 @@
-lark>=1.2.2
-numpy>=2.2.1
-pyzmq>=26.2.0
 cbor>=1.0.0
 cbor2>=5.6.5
+gymnasium
+lark>=1.2.2
+moviepy
+numpy>=2.2.1
+pillow
+pyzmq>=26.2.0
