@@ -1452,6 +1452,8 @@ sim_rendermode_extrenderer = 5
 sim_rendermode_extrendererwindowed = 6
 sim_rendermode_opengl3 = 7
 sim_rendermode_opengl3windowed = 8
+sim_rendermode_oglimg = 9
+sim_rendermode_codedimg = 10
 
 sim_syncobj_worldcont = 0
 sim_syncobj_world = 1

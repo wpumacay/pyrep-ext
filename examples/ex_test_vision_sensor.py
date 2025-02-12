@@ -3,6 +3,7 @@ from moviepy import ImageSequenceClip
 from PIL import Image
 
 from pyrep_ext import MODELS_DIR, SCENES_DIR
+from pyrep_ext.const import RenderMode
 from pyrep_ext.objects.joint import Joint
 from pyrep_ext.objects.vision_sensor import VisionSensor
 from pyrep_ext.pyrep import PyRep
@@ -22,6 +23,14 @@ def main() -> int:
     hinge.set_joint_position(np.random.uniform(-np.pi, np.pi))
 
     vision_sensor = VisionSensor("main_camera")
+    print(f"resolution: {vision_sensor.get_resolution()}")
+    print(f"is-perspective: {vision_sensor.is_perspective()}")
+    print(f"render-mode: {vision_sensor.get_render_mode()}")
+    # vision_sensor.set_render_mode(RenderMode.OPENGL)
+
+    # TODO(wilbert): fix set_resolution method, it breaks when calling property
+    #### vision_sensor.set_resolution([1280, 720])
+    #### print(f"resolution: {vision_sensor.get_resolution()}")
 
     frames = []
     for _ in range(1000):
