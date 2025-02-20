@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Union
+from typing import Tuple, Union
 
 from pyrep_ext.const import JointControlMode, JointMode, JointType, ObjectType
 from pyrep_ext.objects.object import Object
@@ -14,6 +14,7 @@ class Joint(Object):
         self._type = self.get_joint_type()
         self._mode = self.get_joint_mode()
         self._ctrl_mode = self.get_control_mode()
+        self._has_limits = self.has_limits()
 
     def _get_requested_type(self) -> ObjectType:
         return ObjectType.JOINT
@@ -169,6 +170,40 @@ class Joint(Object):
         """
         self._sim_api.setJointTargetForce(self._handle, forceOrTorque)
 
+    def has_limits(self) -> bool:
+        """
+        Returns whether or not this joint has lower and upper limits
+
+        Return
+        ------
+            bool
+                Whether or not this joint is limited
+        """
+        return not self._sim_api.getBoolProperty(self._handle, "cyclic")
+
+    def set_enable_limits(self, value: bool) -> None:
+        """
+        Sets whether or not this joint has limits
+
+        Parameters
+        ----------
+            value: bool
+                The value to be set for whether or not this joint has limits
+        """
+        self._sim_api.setBoolProperty(self._handle, "cyclic", not value)
+
+    def set_joint_limits(self, limits: Tuple[float, float]) -> None:
+        """
+        Sets the joint limits for this joint
+
+        Parameters
+        ----------
+            limits: Tuple[float, float]
+                The lower and upper limits for this joint
+        """
+        interval = (limits[0], limits[1] - limits[0])
+        self._sim_api.setJointInterval(self._handle, False, list(interval))
+
     def __repr__(self) -> str:
         return (
             "Joint<\n"
@@ -176,5 +211,6 @@ class Joint(Object):
             f"  type: {self._type}\n"
             f"  mode: {self._mode}\n"
             f"  ctrlmode: {self._ctrl_mode}\n"
+            f"  hasLimits: {self._has_limits}"
             ">\n"
         )
