@@ -22,7 +22,7 @@ def main() -> int:
     print(f"joint-ctrl-mode: {hinge.get_control_mode()}")
     print(f"joint-has-limits: {hinge.has_limits()}")
 
-    hinge.set_joint_limits((-np.pi / 2, np.pi / 2))
+    # hinge.set_joint_limits((-np.pi / 2, np.pi / 2))
 
     # hinge.set_joint_mode(JointMode.DYNAMIC)
     # hinge.set_control_mode(JointControlMode.POSITION)
